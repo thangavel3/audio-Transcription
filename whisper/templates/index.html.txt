@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Audio Transcription</title>
+  </head>
+  <body>
+    <h1>Audio Transcription</h1>
+    <p>{{ transcription }}</p>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Speech-to-Text</title>
+</head>
+<body>
+    <h1>Live Speech-to-Text</h1>
+    <div id="transcript"></div>
+
+    <script>
+        const transcriptDiv = document.getElementById('transcript');
+
+        // Open a WebSocket connection
+        const socket = new WebSocket('ws://' + window.location.host + '/speech');
+
+        // Handle incoming messages
+        socket.onmessage = function(event) {
+            transcriptDiv.innerHTML = event.data;
+        };
+
+        // Get access to the user's microphone
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function(stream) {
+                const mediaRecorder = new MediaRecorder(stream);
+                const audioChunks = [];
+
+                // Start recording
+                mediaRecorder.start();
+
+                // Send audio data to the server every second
+                mediaRecorder.addEventListener('dataavailable', function(event) {
+                    audioChunks.push(event.data);
+                });
+
+                setInterval(function() {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onload = function() {
+                        socket.send(reader.result);
+                    };
+                    reader.readAsArrayBuffer(audioBlob);
+                    audioChunks.length = 0;
+                }, 1000);
+            })
+            .catch(function(err) {
+                console.error('Error accessing microphone:', err);
+            });
+    </script>
+</body>
+</html>

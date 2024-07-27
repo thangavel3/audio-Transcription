@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Transcription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        h1 {
+            color: #0077b6;
+            text-align: center;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+        input[type="submit"] {
+            background-color: #0077b6;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .status-container {
+            text-align: center;
+        }
+        .text-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            white-space: pre-wrap;
+        }
+        .success-container {
+            text-align: center;
+            margin-top: 20px;
+            color: green;
+            font-weight: bold;
+        }
+        audio {
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Audio Transcription</h1>
+    <form action="/transcribe" method="POST" enctype="multipart/form-data">
+        <input type="file" name="audio_file" accept=".mp3,.wav" required>
+        <br>
+        <input type="submit" value="Transcribe">
+    </form>
+    <div class="container">
+        <div class="status-container">
+            {% if error %}
+                <p>{{ error }}</p>
+            {% elif detected_language %}
+                <p div class="success-container">Detected language: {{ detected_language }}</p>
+            {% endif %}
+        </div>
+        <audio controls id="audioPlayer">
+            Your browser does not support the audio element.
+        </audio>
+        <div class="text-container">
+            {{ text }}
+        </div>
+        {% if success %}
+            <div class="success-container">
+                &#10004; Transcription complete
+            </div>
+        {% endif %}
+    </div>
+    <script>
+        // Function to play uploaded audio file
+        function playUploadedAudio() {
+            var audioPlayer = document.getElementById('audioPlayer');
+            var audioFile = document.getElementById('audioFile').files[0];
+            var audioURL = URL.createObjectURL(audioFile);
+            audioPlayer.src = audioURL;
+        }
+        
+        // Event listener for file input change
+        document.getElementById('audioFile').addEventListener('change', playUploadedAudio);
+    </script>
+</body>
+</html>
